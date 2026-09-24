@@ -83,3 +83,5 @@ Vous pouvez importer `openapi.yaml` dans Bruno pour générer votre collection :
 requêtes viennent de votre propre contrat.
 
 N'écrivez pas les douze opérations avant de tester la première.
+
+Oui, j'ai utilisé l'IA pour pouvoir rédiger les schémas et entrypoints. Je lui ai demandé des blocs à utiliser et je les ai imbriqués ensemble. J'ai évidemment utilisé l'IA pour savoir si la syntaxe était correcte.

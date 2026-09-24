@@ -1,3 +1,4 @@
+
 openapi: 3.1.0
 
 info:
@@ -345,17 +346,15 @@ paths:
         panier actif à la fois — et parfois aucun, ce qui est un état normal
         et non une erreur. Réfléchissez à ce que ça implique pour la réponse.
       responses:
-          '200':
-            description: Panier actif du voyageur (ou null s'il n'en a aucun).
-            content:
-              application/json:
-                schema:
-                  oneOf:
-                    - $ref: '#/components/schemas/Cart'
-                    - type: 'null'
-          '204':
-            description: Aucun panier actif pour ce voyageur.
-          '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Panier actif du voyageur.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '204':
+          description: Aucun panier actif pour ce voyageur.
+        '401': { $ref: '#/components/responses/Unauthorized' }
 
   /carts/{id}/items:
     post:
@@ -459,7 +458,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cart'
+                $ref: '#/components/schemas/PayResponse'
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
@@ -477,22 +476,23 @@ paths:
 
   /tickets:
     get:
-      tags: [ Panier ]
-      operationId: getTicket
-      summary: récupérer les tickets
+      tags: [ Compte ]
+      operationId: getTickets
+      summary: Consulter ses billets
       description: |
         Lister les billets du voyageur connecté. Un billet est un droit à
         embarquer sur un lancer : il n'est pas nominatif, il vaut pour une
-        place et non pour une personne désignée.
+        place et non pour une personne désignée. Retourne une collection vide `[]`
+        si le voyageur n'a aucun billet.
       responses:
         '200':
-          description: Panier actif du voyageur (ou null s'il n'en a aucun).
+          description: Liste des billets détenus par le voyageur (tableau vide si aucun).
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/Ticket'
-                  - type: 'null'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
         '401': { $ref: '#/components/responses/Unauthorized' }
 
 components:
@@ -775,10 +775,14 @@ components:
       properties:
         departureCityId:
           type: string
-          example: dijon
+          format: uuid
+          description: Identifiant unique de la ville de départ.
+          example: 3f2a1b8c-5d4e-4f6a-9b8c-1d2e3f4a5b6c
         arrivalCityId:
           type: string
-          example: paris
+          format: uuid
+          description: Identifiant unique de la ville d'arrivée.
+          example: 1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d
         date:
           type: string
           format: date
@@ -852,21 +856,6 @@ components:
           description: Nombre de places à réserver (supérieur ou égal à 1).
           example: 2
 
-    DeleteCartIte:
-      type: object
-      description: supprime un lancer du panier actif.
-      required: [ cartId, tripId ]
-      properties:
-        cartId:
-          type: string
-          format: uuid
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        tripId:
-          type: string
-          format: uuid
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-
-
     PayCartRequest:
       type: object
       description: Simulation de règlement du panier.
@@ -877,11 +866,24 @@ components:
           enum: [card, voucher]
           description: Moyen de paiement déclaré (carte bancaire ou bon de transport ONTB).
           example: card
-#
-#    # ------------------------------------------------------------ Billets
+
+    PayResponse:
+      type: object
+      description: Confirmation du règlement et billets émis pour l'écran de confirmation.
+      required: [cart, tickets]
+      properties:
+        cart:
+          $ref: '#/components/schemas/Cart'
+        tickets:
+          type: array
+          description: Billets d'embarquement émis (un par place réservée).
+          items:
+            $ref: '#/components/schemas/Ticket'
+
+    # ------------------------------------------------------------ Billets
     Ticket:
       type: object
-      description: Billet nominatif d'embarquement (un par place réservée).
+      description: Billet d'embarquement non nominatif (un par place réservée).
       required: [id, trip, price, issuedAt]
       properties:
         id:
