@@ -1,0 +1,60 @@
+  ### 1. Ce qui a été réalisé
+
+  Dans le dossier atelier-bruno :
+
+  1. Configuration de la collection :
+      • bruno.json : Déclaration de la collection Bruno versionnée avec Git.
+      • collection.bru : Authentification posée au niveau global de la collection (Bearer demo-token), dont héritent toutes les requêtes configurées en auth: inherit.
+      • local.bru : Définition de l'environnement local avec la variable baseUrl = http://localhost:4010.
+  2. Dossier parcours/ (Parcours nominal du voyageur) :
+      • Chercher une gare.bru : GET {{baseUrl}}/stations → 200 OK (application/json)
+      • Chercher un trajet.bru : GET {{baseUrl}}/trips avec origin, destination, date → 200 OK (application/json)
+      • Réserver.bru : POST {{baseUrl}}/bookings avec body JSON conforme au contrat → 201 Created (application/json)
+      • Relire sa réservation.bru : GET {{baseUrl}}/bookings/{id} → 200 OK (application/json)
+      • Payer.bru : POST {{baseUrl}}/bookings/{id}/payment avec coordonnées de carte → 200 OK (application/json)
+      • Annuler.bru : DELETE {{baseUrl}}/bookings/{id} → 204 No Content (sans corps, hold libéré)
+  3. Dossier erreurs/ (Cas de refus de l'API) :
+      • Sans jeton.bru : GET {{baseUrl}}/stations avec auth: none pour déroger au jeton de la collection → 401 Unauthorized (application/problem+json)
+      • Identifiant mal formé.bru : GET {{baseUrl}}/bookings/abc (l'identifiant n'étant pas un UUID) → 400 Bad Request (application/problem+json)
+      • Identifiant inconnu.bru : GET {{baseUrl}}/bookings/{id} avec en-tête Prefer: code=404 → 404 Not Found (application/problem+json)
+
+  ──────
+  ### 2. Validation de l'exécution
+
+  La collection a été exécutée et validée avec la CLI Bruno (bru run --env local) :
+
+    erreurs/Sans jeton (401 Unauthorized) - 44 ms
+    erreurs/Identifiant mal formé (400 Bad Request) - 19 ms
+    erreurs/Identifiant inconnu (404 Not Found) - 25 ms
+    parcours/Chercher une gare (200 OK) - 26 ms
+    parcours/Chercher un trajet (200 OK) - 30 ms
+    parcours/Réserver (201 Created) - 69 ms
+    parcours/Relire sa réservation (200 OK) - 14 ms
+    parcours/Payer (200 OK) - 90 ms
+    parcours/Annuler (204 No Content) - 29 ms
+
+    📊 Execution Summary
+    ┌───────────────┬──────────────┐
+    │ Status        │    ✓ PASS    │
+    ├───────────────┼──────────────┤
+    │ Requests      │ 9 (9 Passed) │
+    └───────────────┴──────────────┘
+  ──────
+  ### 3. Synchronisation & Git
+
+  • Dans votre application Bruno actuellement ouverte (WSL) : Les fichiers ont été copiés dans votre collection atelierbruno (~/snap/bruno/119/Documents/bruno/atelierbruno). Vous
+  y retrouvez directement les dossiers parcours, erreurs et l'environnement local.
+  • Dans le dépôt Git : Les fichiers de collection ont été ajoutés et commités avec le message :
+ feat(atelier-bruno): collection complète (parcours nominal et cas d'erreur).
+
+
+ # Handling errors
+
+ ```sh
+ # Select a client library to see examples of
+ # handling different kinds of errors.
+ ```
+
+ Our Client libraries raise exceptions for many reasons, such as a failed charge, invalid parameters, authentication errors, and network unavailability. We recommend writing code that gracefully handles all possible API exceptions.
+
+ - Related guide: [Error Handling](https://docs.stripe.com/error-handling.md)

@@ -1,0 +1,30 @@
+meta {
+  name: Payer
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/bookings/1725ff48-ab45-4bb5-9d02-88745177dedb/payment
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "amount": 49.99,
+    "currency": "gbp",
+    "source": {
+      "object": "card",
+      "name": "J. Doe",
+      "number": "4242424242424242",
+      "cvc": "123",
+      "exp_month": 12,
+      "exp_year": 2025,
+      "address_line1": "123 Fake Street",
+      "address_city": "London",
+      "address_country": "gb",
+      "address_post_code": "N12 9XX"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+curl -s -X POST -H "x-api-key: secret123" -H "Content-Type: application/x-www-form-urlencoded" -d "name=Apples" http://localhost:8080/groceries
+
+  /cities:
+    get:
+      tags: [Découverte]
+      operationId: listCities
+      summary: Rechercher une ville desservie
+      description: |
+        Retourne les villes du réseau, filtrées par recherche textuelle. Chaque ville
+        possède une catapulte unique en son centre, qui sert à la fois de point de
+        lancement et de zone de réception.
+      security: []
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: Filtre textuel sur le nom de la ville. Insensible à la casse et aux accents.
+          schema:
+            type: string
+          example: dij
+        - name: limit
+          in: query
+          required: false
+          description: Nombre maximum de villes retournées.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Villes correspondant au filtre. Tableau vide si aucune.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/City'
+              example:
+                - id: 3f2a1b8c-5d4e-4f6a-9b8c-1d2e3f4a5b6c
+                  name: Dijon
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+# ...
+
+    City:
+      type: object
+      description: Ville desservie. Chaque ville possède une catapulte unique en son centre.
+      required: [id, name]
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 3f2a1b8c-5d4e-4f6a-9b8c-1d2e3f4a5b6c
+        name:
+          type: string
+          example: Dijon

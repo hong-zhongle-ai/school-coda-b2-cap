@@ -1,0 +1,17 @@
+meta {
+  name: Chercher un trajet
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/trips?origin=efdbb9d1-02c2-4bc3-afb7-6788d8782b1e&destination=b2e783e1-c824-4d63-b37a-d8d698862f1d&date=2024-02-01T09:00:00Z
+  body: none
+  auth: inherit
+}
+
+params:query {
+  origin: efdbb9d1-02c2-4bc3-afb7-6788d8782b1e
+  destination: b2e783e1-c824-4d63-b37a-d8d698862f1d
+  date: 2024-02-01T09:00:00Z
+}
